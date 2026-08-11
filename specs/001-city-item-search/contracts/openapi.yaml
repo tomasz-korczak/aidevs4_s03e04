@@ -1,0 +1,123 @@
+openapi: 3.0.3
+info:
+  title: City–Item File Search API
+  version: 1.0.0
+  description: >
+    Natural-language search over local city/item CSV files via LLM + files MCP.
+    Success and domain errors both use SearchResponse.output (UTF-8 length 4–500 bytes).
+servers:
+  - url: http://localhost:{port}
+    variables:
+      port:
+        default: "8080"
+paths:
+  /api/items:
+    post:
+      operationId: searchCitiesByItems
+      summary: Find cities that contain all items described in params
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchRequest"
+            example:
+              params: Find cities that have both item A and item B
+      responses:
+        "200":
+          description: Search finished; output is comma-separated city names or a descriptive error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResponse"
+              examples:
+                success:
+                  value:
+                    output: "Warszawa,Krakow"
+                overflow:
+                  value:
+                    output: "Found 42 cities not fitting 500 bytes limit"
+                outOfScope:
+                  value:
+                    output: "Command out of scope for /api/items"
+        "400":
+          description: Missing or blank params before LLM invocation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResponse"
+        "500":
+          description: LLM or MCP tool failure after successful startup; output still 4–500 UTF-8 bytes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResponse"
+              example:
+                output: "LLM provider unavailable"
+  /api/city:
+    post:
+      operationId: searchItemsByCity
+      summary: Find all items present in exactly one city described in params
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchRequest"
+            example:
+              params: List all items in Warszawa
+      responses:
+        "200":
+          description: Search finished; output is comma-separated item names or a descriptive error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResponse"
+              examples:
+                success:
+                  value:
+                    output: "Item1,Item2,Item3"
+                overflow:
+                  value:
+                    output: "Found 20 items not fitting 500 bytes limit"
+                multiCity:
+                  value:
+                    output: "Provide exactly one city name"
+        "400":
+          description: Missing or blank params before LLM invocation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResponse"
+        "500":
+          description: LLM or MCP tool failure after successful startup; output still 4–500 UTF-8 bytes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResponse"
+              example:
+                output: "MCP file tools failed"
+components:
+  schemas:
+    SearchRequest:
+      type: object
+      required: [params]
+      additionalProperties: false
+      properties:
+        params:
+          type: string
+          minLength: 1
+          description: Natural-language command for this endpoint
+    SearchResponse:
+      type: object
+      required: [output]
+      additionalProperties: false
+      properties:
+        output:
+          type: string
+          description: >
+            UTF-8 byte length must be between 4 and 500 inclusive.
+            Happy path: comma-separated exact CSV name values with no spaces (Name1,Name2).
+            Otherwise a descriptive error string (also 4–500 bytes).
+          minLength: 4
+          maxLength: 500
