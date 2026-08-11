@@ -4,7 +4,7 @@
 
 **Input**: Feature specification from `/specs/001-city-item-search/spec.md` plus plan-time stack and contract rules supplied with `/speckit-plan`.
 
-**Note**: Plan-time API contract (`{"output":"..."}` name strings, `/api/items` + `/api/city`, 4–500 byte `output`) supersedes earlier clarification wording about JSON name arrays and empty success lists.
+**Note**: Wire contract is aligned with `spec.md` (synced 2026-08-12): `POST /api/items` + `POST /api/city`, `{params}` → `{output}` (4–500 UTF-8 bytes, comma-separated names with no spaces).
 
 ## Summary
 
@@ -26,7 +26,7 @@ Build a Spring Boot 3 / Java 23 REST service (`pl.tomaszko:s03e04`) that exposes
 
 **Performance Goals**: No wall-clock latency success criterion (author decision; SC-006 removed)
 
-**Constraints**: `output` UTF-8 byte length ∈ [4, 500]; exact CSV name values only; fail-fast if corpus/MCP unavailable; MCP used read-only (read/search tools only); secrets via env (`OPENROUTER_API_KEY`, `HUB_API_KEY`)
+**Constraints**: `output` UTF-8 byte length ∈ [4, 500]; exact CSV name values only; fail-fast if corpus/MCP unavailable; MCP used read-only (read/search tools only); `OPENROUTER_API_KEY` required via env; `HUB_API_KEY` optional and unused by `/api/*` (FR-022)
 
 **Scale/Scope**: 2 endpoints, 3 CSV files, 1 stdio MCP child process, 2 dedicated system prompts
 
@@ -70,7 +70,7 @@ src/main/java/pl/tomaszko/s03e04/
 ├── config/
 │   ├── AppProperties.java              # @ConfigurationProperties
 │   ├── AiConfig.java                   # ChatClient, OpenRouter, MCP wiring
-│   └── LoggingConfig.java              # console + file logging helpers if needed
+│   └── StartupReadinessValidator.java  # corpus + MCP fail-fast at boot
 ├── web/
 │   ├── SearchController.java           # /api/items, /api/city
 │   ├── SearchRequest.java

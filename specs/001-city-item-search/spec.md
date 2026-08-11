@@ -24,7 +24,7 @@
 - Q: Spec↔plan conflicts (paths, `params`, `output` string, no empty-list success, `code` vocabulary) — update spec to match plan as source of truth? → A: Yes; plan/contracts are authoritative; spec updated to match
 - Q: Happy-path name delimiter/spacing? → A: Comma only, no spaces (`City1,City2`)
 - Q: Keep 30-second completion success criterion? → A: No; do not use a time-completion rule
-- Q: LLM/MCP failure after successful startup — response shape? → A: HTTP 5xx with `{ "output": "<descriptive error>" }` still obeying 4–500 UTF-8 bytes
+- Q: LLM/MCP failure after successful startup — response shape? → A: HTTP 500 with `{ "output": "<descriptive error>" }` still obeying 4–500 UTF-8 bytes
 - Q: `HUB_API_KEY` for this feature? → A: Out of scope for search endpoints; may exist as env only, unused by `/api/*`
 
 ## User Scenarios & Testing *(mandatory)*
@@ -105,7 +105,7 @@ Because `params` is public and unconstrained, clients may send ambiguous, unrela
 - Result names exceed 500 UTF-8 bytes: HTTP 200 descriptive overflow error stating how many names were found (error itself 4–500 bytes); never truncate/abbreviate names.
 - Startup: missing corpus or MCP → fail fast.
 - Orphan connection codes at request time: descriptive error in `output` (HTTP 200).
-- LLM unavailable or MCP tools fail after successful start: HTTP 5xx with `{ "output": "<descriptive error>" }` still 4–500 UTF-8 bytes.
+- LLM unavailable or MCP tools fail after successful start: HTTP 500 with `{ "output": "<descriptive error>" }` still 4–500 UTF-8 bytes.
 - Concurrent requests: best-effort; per-response correctness still required.
 
 ## Requirements *(mandatory)*
@@ -128,7 +128,7 @@ Because `params` is public and unconstrained, clients may send ambiguous, unrela
 - **FR-017**: Domain “no matches” cases (known entities but empty intersection / no linked items) MUST use a descriptive error in `output` (HTTP 200), not an empty success string.
 - **FR-019**: Successful name lists in `output` MUST use comma separators with **no spaces** (e.g. `Name1,Name2,Name3`).
 - **FR-020**: Every `output` value (success or descriptive error) MUST have UTF-8 byte length between 4 and 500 inclusive. If a correct name list cannot fit, return a descriptive overflow error that states how many names were found and remains within 4–500 bytes.
-- **FR-021**: When the language model or MCP file tools fail during a request after successful startup, the system MUST return HTTP 5xx with `{ "output": "<descriptive error>" }` still satisfying FR-020.
+- **FR-021**: When the language model or MCP file tools fail during a request after successful startup, the system MUST return HTTP 500 with `{ "output": "<descriptive error>" }` still satisfying FR-020.
 - **FR-010**: On application start, the system MUST verify the local corpus is readable, start the stdio files MCP server, expose the two REST endpoints, and wait for requests until externally terminated.
 - **FR-018**: If local data files are missing/unreadable or the stdio files MCP server cannot start, the system MUST fail fast and MUST NOT advertise the search endpoints as available.
 - **FR-011**: System MUST expose only these search capabilities as its user-facing interface (no GUI).
@@ -156,7 +156,7 @@ Because `params` is public and unconstrained, clients may send ambiguous, unrela
 - **SC-003**: After a successful start, both endpoints are reachable and can complete a valid search without further manual setup.
 - **SC-011**: When required local files are missing/unreadable or MCP cannot start, the application fails to become ready in 100% of such startup attempts.
 - **SC-004**: Missing/blank `params` yield HTTP 400 in 100% of cases.
-- **SC-005**: When LLM or MCP tools fail during a request after startup, the client receives HTTP 5xx with `output` descriptive error (4–500 UTF-8 bytes) in 100% of observed cases (no fabricated matches).
+- **SC-005**: When LLM or MCP tools fail during a request after startup, the client receives HTTP 500 with `output` descriptive error (4–500 UTF-8 bytes) in 100% of observed cases (no fabricated matches).
 - **SC-010**: Off-topic or otherwise unfulfillable commands (machinery working) return HTTP 200 with descriptive `output` in 100% of representative cases, never an empty success `output`.
 - **SC-013**: Every returned `output` (including errors) is between 4 and 500 UTF-8 bytes inclusive in 100% of responses that include `output`.
 

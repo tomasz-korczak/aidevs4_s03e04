@@ -83,7 +83,7 @@ Rules:
 HTTP:
 - `200` + `{output}` for success and domain/descriptive errors (unfulfillable command, missing entity, overflow, empty intersection, etc.)
 - `400` when `params` is missing/blank before LLM invocation
-- `5xx` + `{output}` descriptive error (still 4–500 UTF-8 bytes) when LLM or MCP tools fail after a successful application start
+- `500` + `{output}` descriptive error (still 4–500 UTF-8 bytes) when LLM or MCP tools fail after a successful application start
 
 Happy-path name delimiter: comma with **no spaces** (`City1,City2`).
 

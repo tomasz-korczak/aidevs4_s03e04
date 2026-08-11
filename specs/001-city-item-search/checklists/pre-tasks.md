@@ -29,7 +29,7 @@
 
 - [x] CHK015 Is the canonical endpoint naming (`/api/city` vs “cities endpoint”) unambiguous across spec and plan? [Clarity] — spec updated to `POST /api/city` and `POST /api/items`
 - [x] CHK016 Is the command field name (`params` vs generic “command parameter”) consistently defined? [Clarity] — spec uses `params` throughout
-- [x] CHK017 Is “descriptive error” defined enough to distinguish message-in-`output` vs alternate error envelope? [Clarity] — 200+`output` domain; 400 blank; 5xx+`output` infra
+- [x] CHK017 Is “descriptive error” defined enough to distinguish message-in-`output` vs alternate error envelope? [Clarity] — 200+`output` domain; 400 blank; 500+`output` infra
 - [x] CHK018 Is “UTF-8 bytes” vs character length explicitly distinguished for the 4–500 constraint? [Clarity, Spec §FR-020]
 - [x] CHK019 Is the happy-path delimiter for multiple names (comma, spacing rules) specified precisely enough to test? [Clarity, Spec §FR-019] — comma, no spaces
 - [x] CHK020 Is “exact values from respective file” mapped to a named CSV column (`name` vs `code`)? [Clarity, Spec §FR-004, data-model.md]
@@ -42,7 +42,7 @@
 - [x] CHK024 Do “no matches” requirements agree (descriptive error in `output`, not empty success)? [Consistency, Spec §FR-017]
 - [x] CHK025 Are endpoint paths fixed in spec (no longer “chosen during planning”)? [Consistency] — fixed to `/api/city`, `/api/items`
 - [x] CHK026 Do SC-012 and plan `output` string contract use compatible acceptance wording? [Consistency, Spec §SC-012]
-- [x] CHK027 Are HTTP status rules consistent across Spec §FR-008/§FR-009/§FR-021? [Consistency]
+- [x] CHK027 Are HTTP status rules consistent across Spec §FR-008/§FR-009/§FR-021? [Consistency] — 400 / 200 / 500
 - [x] CHK028 Is LLM→`output` handoff consistent (final assistant text becomes `output` after validation)? [Consistency, Spec §FR-006]
 
 ## Acceptance Criteria Quality
@@ -50,7 +50,7 @@
 - [x] CHK029 Can the 4–500 UTF-8 byte rule be objectively measured for every response class? [Measurability, Spec §FR-020, §SC-013]
 - [x] CHK030 Are SC-001/SC-002 90% accuracy criteria meaningful under the `output` string format? [Acceptance Criteria]
 - [x] CHK031 Is overflow messaging required content (found count + byte limit) specific enough? [Measurability, Spec §FR-020]
-- [x] CHK032 Are fail-fast readiness criteria objectively observable? [Measurability, Spec §SC-011]
+- [x] CHK032 Are fail-fast readiness criteria objectively observable? [Measurability, Spec §SC-011] — T024/T025 in Phase 2
 - [x] CHK033 Is the 30-second completion criterion tied to a defined scenario? [Measurability] — **removed** per author (no time-completion rule)
 
 ## Scenario & Edge Case Coverage
@@ -59,7 +59,7 @@
 - [x] CHK035 Are out-of-scope / wrong-endpoint-intent requirements complete? [Coverage, Spec US4]
 - [x] CHK036 Are zero-intersection requirements defined under descriptive-error model? [Coverage, Spec §FR-017]
 - [x] CHK037 Are known-city-with-zero-items requirements defined under descriptive-error model? [Coverage, Spec US1.2]
-- [x] CHK038 Are LLM/MCP request-time failures specified with response shape? [Coverage, Spec §FR-021] — HTTP 5xx + `output` 4–500 bytes
+- [x] CHK038 Are LLM/MCP request-time failures specified with response shape? [Coverage, Spec §FR-021] — HTTP 500 + `output` 4–500 bytes
 - [x] CHK039 Are orphan connection code requirements specified? [Coverage]
 - [x] CHK040 Are concurrent-request requirements intentionally scoped (best-effort)? [Coverage]
 
@@ -73,5 +73,6 @@
 
 ## Notes
 
-- Author decisions 2026-08-12: Q1=A (sync spec), Q2=A (no spaces), Q3=drop latency SC, Q4=B (5xx+output), Q5=A (hub key out of scope)
-- Status: **45/45 closed** — ready for `/speckit-tasks`
+- Author decisions 2026-08-12: Q1=A (sync spec), Q2=A (no spaces), Q3=drop latency SC, Q4=B (500+output locked), Q5=A (hub key out of scope)
+- Analyze remediation applied: C1 fail-fast→Phase 2; I1/I2 plan wording; U1 HTTP 500; I3 drop LoggingConfig
+- Status: **45/45 closed** — ready for `/speckit-implement`
