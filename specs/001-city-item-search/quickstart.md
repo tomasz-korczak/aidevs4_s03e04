@@ -59,7 +59,7 @@ Base URL: `http://localhost:8080`
 ```powershell
 Invoke-RestMethod -Method POST -Uri http://localhost:8080/api/items `
   -ContentType "application/json" `
-  -Body '{"params":"Find cities that contain <known item name from items.csv>"}'
+  -Body '{"params":{"items":["<known item name from items.csv>"]}}'
 ```
 
 **Expect**: `{"output":"..."}` with UTF-8 length 4–500; on success, comma-separated **exact** city names from `cities.csv`.
@@ -69,7 +69,7 @@ Invoke-RestMethod -Method POST -Uri http://localhost:8080/api/items `
 ```powershell
 Invoke-RestMethod -Method POST -Uri http://localhost:8080/api/city `
   -ContentType "application/json" `
-  -Body '{"params":"List all items in Warszawa"}'
+  -Body '{"params":{"city":"Warszawa"}}'
 ```
 
 **Expect**: comma-separated exact item names, or a descriptive error if the result cannot fit in 500 bytes.
@@ -78,7 +78,7 @@ Invoke-RestMethod -Method POST -Uri http://localhost:8080/api/city `
 
 - `/api/city` with two city names → descriptive error in `output`
 - `/api/items` with unknown item → descriptive error (no partial cities)
-- Blank `params` → `400` (or documented client error) before LLM call
+- Missing/empty `params` object → `400` (or documented client error) before LLM call
 
 ### 4. Byte-window enforcement
 

@@ -1,0 +1,56 @@
+server:
+  port: ${SERVER_PORT:7777}
+
+spring:
+  application:
+    name: s03e04
+  ai:
+    openai:
+      api-key: ${OPENROUTER_API_KEY}
+      base-url: https://openrouter.ai/api
+      chat:
+        options:
+          model: ${app.llm.model}
+    mcp:
+      client:
+        enabled: true
+        type: SYNC
+        request-timeout: 120s
+        toolcallback:
+          enabled: true
+        stdio:
+          root-change-notification: false
+          connections:
+            files:
+              command: ${app.mcp.files.java-command}
+              args:
+                - -jar
+                - ${app.mcp.files.jar-path}
+              env:
+                FS_ROOTS: ${app.mcp.files.data-root}
+                JAVA_HOME: ${JAVA_HOME:C:\\tools\\jdk-23.0.2}
+
+app:
+  http:
+    base-url: http://localhost:${server.port}
+  hub-api-key: ${HUB_API_KEY:}
+  llm:
+    model: inclusionai/ling-3.0-flash
+  mcp:
+    files:
+      java-command: ${JAVA_HOME:C:\\tools\\jdk-23.0.2}\\bin\\java.exe
+      jar-path: C:\\priv\\aidevs4-cwiczenia\\filesmcp-spring\\target\\filesmcp-0.0.1-SNAPSHOT.jar
+      data-root: C:\\priv\\aidevs4-cwiczenia\\workspace
+  output:
+    byte-min: 4
+    byte-max: 500
+  prompts:
+    city:
+      template: classpath:prompts/city-system.st
+    items:
+      template: classpath:prompts/items-system.st
+
+logging:
+  level:
+    pl.tomaszko.s03e04: INFO
+    pl.tomaszko.s03e04.logging: INFO

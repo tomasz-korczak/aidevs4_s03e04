@@ -38,7 +38,7 @@
 
 | Field | Type | Rules |
 |-------|------|-------|
-| params | string | Required, non-blank natural-language command |
+| params | object | Required, non-empty JSON object; serialized and forwarded to the LLM as the user message |
 
 ### SearchResponse
 

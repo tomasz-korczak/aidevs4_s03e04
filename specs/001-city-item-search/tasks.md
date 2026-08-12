@@ -1,21 +1,21 @@
----
-description: "Task list for City–Item File Search API implementation"
+﻿---
+description: "Task list for Cityâ€“Item File Search API implementation"
 ---
 
-# Tasks: City–Item File Search API
+# Tasks: Cityâ€“Item File Search API
 
 **Input**: Design documents from `/specs/001-city-item-search/`
 
 **Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts/
 
-**Tests**: Not requested in spec — no test tasks included
+**Tests**: Not requested in spec â€” no test tasks included
 
-**Organization**: Tasks grouped by user story (US1–US4) for independent delivery
+**Organization**: Tasks grouped by user story (US1â€“US4) for independent delivery
 
 ## Format: `[ID] [P?] [Story] Description`
 
 - **[P]**: Can run in parallel (different files, no dependencies on incomplete work)
-- **[Story]**: User story label (`[US1]`…`[US4]`)
+- **[Story]**: User story label (`[US1]`â€¦`[US4]`)
 - Include exact file paths in descriptions
 
 ## Path Conventions
@@ -26,11 +26,11 @@ description: "Task list for City–Item File Search API implementation"
 
 **Purpose**: Maven/Spring Boot project skeleton and toolchain
 
-- [ ] T001 Create Maven project layout with `pom.xml` (`groupId=pl.tomaszko`, `artifactId=s03e04`, Java 23, Spring Boot `3.5.15`, Spring AI BOM `1.1.8`) at repository root
-- [ ] T002 Add dependencies in `pom.xml`: `spring-boot-starter-web`, `spring-ai-starter-model-openai`, `spring-ai-starter-mcp-client`, `spring-boot-starter-validation`, `spring-boot-starter-test` (test scope)
-- [ ] T003 [P] Create application entrypoint `src/main/java/pl/tomaszko/s03e04/S03e04Application.java`
-- [ ] T004 [P] Create package directories under `src/main/java/pl/tomaszko/s03e04/` for `config/`, `web/`, `service/`, `prompt/`, `logging/` per plan.md
-- [ ] T005 [P] Add baseline `src/main/resources/application.yml` with `server.port`, app placeholders, and OpenRouter base-url stub
+- [X] T001 Create Maven project layout with `pom.xml` (`groupId=pl.tomaszko`, `artifactId=s03e04`, Java 23, Spring Boot `3.5.15`, Spring AI BOM `1.1.8`) at repository root
+- [X] T002 Add dependencies in `pom.xml`: `spring-boot-starter-web`, `spring-ai-starter-model-openai`, `spring-ai-starter-mcp-client`, `spring-boot-starter-validation`, `spring-boot-starter-test` (test scope)
+- [X] T003 [P] Create application entrypoint `src/main/java/pl/tomaszko/s03e04/S03e04Application.java`
+- [X] T004 [P] Create package directories under `src/main/java/pl/tomaszko/s03e04/` for `config/`, `web/`, `service/`, `prompt/`, `logging/` per plan.md
+- [X] T005 [P] Add baseline `src/main/resources/application.yml` with `server.port`, app placeholders, and OpenRouter base-url stub
 
 **Checkpoint**: Project builds with `mvn -q -DskipTests package` (empty app OK)
 
@@ -38,40 +38,40 @@ description: "Task list for City–Item File Search API implementation"
 
 ## Phase 2: Foundational (Blocking Prerequisites)
 
-**Purpose**: Shared config, logging, MCP+LLM wiring, DTOs, output validation — MUST complete before story endpoints
+**Purpose**: Shared config, logging, MCP+LLM wiring, DTOs, output validation â€” MUST complete before story endpoints
 
-**⚠️ CRITICAL**: No user story endpoint work until this phase is complete
+**âš ï¸ CRITICAL**: No user story endpoint work until this phase is complete
 
-- [ ] T006 Implement `@ConfigurationProperties` in `src/main/java/pl/tomaszko/s03e04/config/AppProperties.java` for MCP jar path, data root, LLM model, prompt paths, HTTP base, optional `HUB_API_KEY` (unused by search)
-- [ ] T007 Bind properties and env mapping in `src/main/resources/application.yml` (`OPENROUTER_API_KEY`, `app.mcp.files.*`, `app.llm.model=nvidia/nemotron-3-ultra-550b-a55b:free`, `spring.ai.openai.*`)
-- [ ] T008 [P] Configure console + file logging in `src/main/resources/logback-spring.xml`
-- [ ] T009 [P] Implement `src/main/java/pl/tomaszko/s03e04/logging/ToolExecutionLogger.java` to log tool parameters and results
-- [ ] T010 [P] Implement `src/main/java/pl/tomaszko/s03e04/logging/ModelExchangeLogger.java` to log system prompt, tool definitions, user prompt, and model response
-- [ ] T011 [P] Create DTOs `src/main/java/pl/tomaszko/s03e04/web/SearchRequest.java` and `src/main/java/pl/tomaszko/s03e04/web/SearchResponse.java` matching contracts/openapi.yaml
-- [ ] T012 Implement `src/main/java/pl/tomaszko/s03e04/service/OutputConstraintValidator.java` enforcing UTF-8 byte length 4–500 and rejecting/replacing invalid lengths with descriptive overflow/size errors
-- [ ] T013 [P] Add prompt templates `src/main/resources/prompts/city-system.st` and `src/main/resources/prompts/items-system.st` from contracts/system-prompts.md (comma, no spaces; MCP read-only tips; byte window)
-- [ ] T014 Implement `src/main/java/pl/tomaszko/s03e04/prompt/PromptTemplates.java` to load/render string templates with `{data_root}`, `{byte_min}`, `{byte_max}`, shared rules
-- [ ] T015 Configure stdio MCP client in `src/main/java/pl/tomaszko/s03e04/config/AiConfig.java` (java -jar filesmcp, `FS_ROOTS`=data root) and expose only `fs_read`/`fs_search` tool callbacks to ChatClient
-- [ ] T016 Wire OpenRouter ChatClient + tool callbacks + exchange logging in `src/main/java/pl/tomaszko/s03e04/config/AiConfig.java`
-- [ ] T017 Implement `src/main/java/pl/tomaszko/s03e04/service/LlmSearchGateway.java` to run ChatClient with a selected system prompt + user `params`, apply OutputConstraintValidator, map infra failures to HTTP 500-ready errors
-- [ ] T024 Implement startup corpus check (readable `cities.csv`, `items.csv`, `connections.csv` under data root) in `src/main/java/pl/tomaszko/s03e04/config/StartupReadinessValidator.java` (or equivalent `@Component` used at boot)
-- [ ] T025 Fail application context/startup if MCP stdio client cannot initialize or corpus check fails in `src/main/java/pl/tomaszko/s03e04/config/AiConfig.java` / readiness validator (FR-018)
+- [X] T006 Implement `@ConfigurationProperties` in `src/main/java/pl/tomaszko/s03e04/config/AppProperties.java` for MCP jar path, data root, LLM model, prompt paths, HTTP base, optional `HUB_API_KEY` (unused by search)
+- [X] T007 Bind properties and env mapping in `src/main/resources/application.yml` (`OPENROUTER_API_KEY`, `app.mcp.files.*`, `app.llm.model=nvidia/nemotron-3-ultra-550b-a55b:free`, `spring.ai.openai.*`)
+- [X] T008 [P] Configure console + file logging in `src/main/resources/logback-spring.xml`
+- [X] T009 [P] Implement `src/main/java/pl/tomaszko/s03e04/logging/ToolExecutionLogger.java` to log tool parameters and results
+- [X] T010 [P] Implement `src/main/java/pl/tomaszko/s03e04/logging/ModelExchangeLogger.java` to log system prompt, tool definitions, user prompt, and model response
+- [X] T011 [P] Create DTOs `src/main/java/pl/tomaszko/s03e04/web/SearchRequest.java` and `src/main/java/pl/tomaszko/s03e04/web/SearchResponse.java` matching contracts/openapi.yaml
+- [X] T012 Implement `src/main/java/pl/tomaszko/s03e04/service/OutputConstraintValidator.java` enforcing UTF-8 byte length 4–500 and rejecting/replacing invalid lengths with descriptive overflow/size errors
+- [X] T013 [P] Add prompt templates `src/main/resources/prompts/city-system.st` and `src/main/resources/prompts/items-system.st` from contracts/system-prompts.md (comma, no spaces; MCP read-only tips; byte window)
+- [X] T014 Implement `src/main/java/pl/tomaszko/s03e04/prompt/PromptTemplates.java` to load/render string templates with `{data_root}`, `{byte_min}`, `{byte_max}`, shared rules
+- [X] T015 Configure stdio MCP client in `src/main/java/pl/tomaszko/s03e04/config/AiConfig.java` (java -jar filesmcp, `FS_ROOTS`=data root) and expose only `fs_read`/`fs_search` tool callbacks to ChatClient
+- [X] T016 Wire OpenRouter ChatClient + tool callbacks + exchange logging in `src/main/java/pl/tomaszko/s03e04/config/AiConfig.java`
+- [X] T017 Implement `src/main/java/pl/tomaszko/s03e04/service/LlmSearchGateway.java` to run ChatClient with a selected system prompt + user `params`, apply OutputConstraintValidator, map infra failures to HTTP 500-ready errors
+- [X] T024 Implement startup corpus check (readable `cities.csv`, `items.csv`, `connections.csv` under data root) in `src/main/java/pl/tomaszko/s03e04/config/StartupReadinessValidator.java` (or equivalent `@Component` used at boot)
+- [X] T025 Fail application context/startup if MCP stdio client cannot initialize or corpus check fails in `src/main/java/pl/tomaszko/s03e04/config/AiConfig.java` / readiness validator (FR-018)
 
-**Checkpoint**: Foundation ready — ChatClient+MCP wired; corpus/MCP fail-fast active; DTOs and validators exist
+**Checkpoint**: Foundation ready â€” ChatClient+MCP wired; corpus/MCP fail-fast active; DTOs and validators exist
 
 ---
 
-## Phase 3: User Story 1 - Find Items in a City (Priority: P1) 🎯 MVP
+## Phase 3: User Story 1 - Find Items in a City (Priority: P1) ðŸŽ¯ MVP
 
 **Goal**: `POST /api/city` returns comma-separated exact item names for exactly one city, or descriptive `output` errors (400 blank params; 200 domain errors; 500 infra)
 
-**Independent Test**: Start app with corpus+MCP; `POST /api/city` with `{"params":"List all items in Warszawa"}` returns HTTP 200 and `output` of exact `items.csv` names joined by `,` (no spaces), or a valid descriptive error within 4–500 UTF-8 bytes
+**Independent Test**: Start app with corpus+MCP; `POST /api/city` with `{"params":"List all items in Warszawa"}` returns HTTP 200 and `output` of exact `items.csv` names joined by `,` (no spaces), or a valid descriptive error within 4â€“500 UTF-8 bytes
 
 ### Implementation for User Story 1
 
-- [ ] T018 [US1] Implement `src/main/java/pl/tomaszko/s03e04/service/CitySearchService.java` using LlmSearchGateway + city system prompt (single city, exact names, overflow/missing/multi-city/out-of-scope errors)
-- [ ] T019 [US1] Implement `POST /api/city` in `src/main/java/pl/tomaszko/s03e04/web/SearchController.java` validating non-blank `params` (HTTP 400) and returning `SearchResponse` with correct status (200 domain / 500 infra)
-- [ ] T020 [US1] Ensure city prompt path and tips are parametrized via `AppProperties` / `application.yml` for `/api/city` only
+- [X] T018 [US1] Implement `src/main/java/pl/tomaszko/s03e04/service/CitySearchService.java` using LlmSearchGateway + city system prompt (single city, exact names, overflow/missing/multi-city/out-of-scope errors)
+- [X] T019 [US1] Implement `POST /api/city` in `src/main/java/pl/tomaszko/s03e04/web/SearchController.java` validating non-blank `params` (HTTP 400) and returning `SearchResponse` with correct status (200 domain / 500 infra)
+- [X] T020 [US1] Ensure city prompt path and tips are parametrized via `AppProperties` / `application.yml` for `/api/city` only
 
 **Checkpoint**: User Story 1 fully functional and testable independently via `/api/city`
 
@@ -85,9 +85,9 @@ description: "Task list for City–Item File Search API implementation"
 
 ### Implementation for User Story 2
 
-- [ ] T021 [P] [US2] Implement `src/main/java/pl/tomaszko/s03e04/service/ItemsSearchService.java` using LlmSearchGateway + items system prompt (intersection, missing-item error, overflow/out-of-scope)
-- [ ] T022 [US2] Add `POST /api/items` to `src/main/java/pl/tomaszko/s03e04/web/SearchController.java` with same request validation and status mapping as `/api/city` (200 domain / 500 infra)
-- [ ] T023 [US2] Ensure items prompt path/tips are parametrized in `application.yml` / `AppProperties` for `/api/items` only
+- [X] T021 [P] [US2] Implement `src/main/java/pl/tomaszko/s03e04/service/ItemsSearchService.java` using LlmSearchGateway + items system prompt (intersection, missing-item error, overflow/out-of-scope)
+- [X] T022 [US2] Add `POST /api/items` to `src/main/java/pl/tomaszko/s03e04/web/SearchController.java` with same request validation and status mapping as `/api/city` (200 domain / 500 infra)
+- [X] T023 [US2] Ensure items prompt path/tips are parametrized in `application.yml` / `AppProperties` for `/api/items` only
 
 **Checkpoint**: User Stories 1 and 2 both work independently (`/api/city` and `/api/items`)
 
@@ -101,7 +101,7 @@ description: "Task list for City–Item File Search API implementation"
 
 ### Implementation for User Story 3
 
-- [ ] T026 [US3] Document run/stop expectations in `README.md` at repo root (JAVA_HOME, env keys, `mvn spring-boot:run`, Ctrl+C); note fail-fast when corpus/MCP missing
+- [X] T026 [US3] Document run/stop expectations in `README.md` at repo root (JAVA_HOME, env keys, `mvn spring-boot:run`, Ctrl+C); note fail-fast when corpus/MCP missing
 
 **Checkpoint**: Operators can start/stop from README; readiness behavior matches Spec US3
 
@@ -109,15 +109,15 @@ description: "Task list for City–Item File Search API implementation"
 
 ## Phase 6: User Story 4 - Handle Unexpected Public Commands (Priority: P3)
 
-**Goal**: Off-topic / unfulfillable / wrong-intent commands return HTTP 200 descriptive `output` (4–500 bytes) without inventing names; prompts enforce grounding
+**Goal**: Off-topic / unfulfillable / wrong-intent commands return HTTP 200 descriptive `output` (4â€“500 bytes) without inventing names; prompts enforce grounding
 
 **Independent Test**: Send nonsense or wrong-endpoint intent to `/api/city` and `/api/items`; receive HTTP 200 descriptive `output`, never fabricated city/item names, never empty success string
 
 ### Implementation for User Story 4
 
-- [ ] T027 [P] [US4] Harden out-of-scope / inability-to-fulfill instructions in `src/main/resources/prompts/city-system.st` and `src/main/resources/prompts/items-system.st`
-- [ ] T028 [US4] Ensure `LlmSearchGateway` / services never treat blank model text as success; map ungrounded/empty finals to descriptive domain errors in `src/main/java/pl/tomaszko/s03e04/service/LlmSearchGateway.java`
-- [ ] T029 [US4] Confirm controller status mapping keeps domain unfulfillable cases as HTTP 200 + `output` (not 500) in `src/main/java/pl/tomaszko/s03e04/web/SearchController.java`
+- [X] T027 [P] [US4] Harden out-of-scope / inability-to-fulfill instructions in `src/main/resources/prompts/city-system.st` and `src/main/resources/prompts/items-system.st`
+- [X] T028 [US4] Ensure `LlmSearchGateway` / services never treat blank model text as success; map ungrounded/empty finals to descriptive domain errors in `src/main/java/pl/tomaszko/s03e04/service/LlmSearchGateway.java`
+- [X] T029 [US4] Confirm controller status mapping keeps domain unfulfillable cases as HTTP 200 + `output` (not 500) in `src/main/java/pl/tomaszko/s03e04/web/SearchController.java`
 
 **Checkpoint**: All four user stories independently demonstrable
 
@@ -127,10 +127,10 @@ description: "Task list for City–Item File Search API implementation"
 
 **Purpose**: Logging completeness, contract alignment, quickstart validation
 
-- [ ] T030 [P] Verify tool + model exchange logging covers all ChatClient/tool calls end-to-end; adjust `ToolExecutionLogger.java` / `ModelExchangeLogger.java` as needed
-- [ ] T031 [P] Align `application.yml` defaults with research.md paths (filesmcp JAR, workspace data root, model id)
-- [ ] T032 Run validation scenarios from `specs/001-city-item-search/quickstart.md` against a running instance and fix gaps
-- [ ] T033 [P] Final pass: ensure `output` formatting uses commas with no spaces and FR-020 byte window on all response paths in `OutputConstraintValidator.java` / services
+- [X] T030 [P] Verify tool + model exchange logging covers all ChatClient/tool calls end-to-end; adjust `ToolExecutionLogger.java` / `ModelExchangeLogger.java` as needed
+- [X] T031 [P] Align `application.yml` defaults with research.md paths (filesmcp JAR, workspace data root, model id)
+- [X] T032 Run validation scenarios from `specs/001-city-item-search/quickstart.md` against a running instance and fix gaps
+- [X] T033 [P] Final pass: ensure `output` formatting uses commas with no spaces and FR-020 byte window on all response paths in `OutputConstraintValidator.java` / services
 
 ---
 
@@ -139,8 +139,8 @@ description: "Task list for City–Item File Search API implementation"
 ### Phase Dependencies
 
 - **Phase 1 Setup**: No dependencies
-- **Phase 2 Foundational**: Depends on Setup — **BLOCKS** all user stories; includes FR-018 fail-fast (`T024`/`T025`)
-- **Phase 3 US1 (P1)**: Depends on Foundational — MVP
+- **Phase 2 Foundational**: Depends on Setup â€” **BLOCKS** all user stories; includes FR-018 fail-fast (`T024`/`T025`)
+- **Phase 3 US1 (P1)**: Depends on Foundational â€” MVP
 - **Phase 4 US2 (P1)**: Depends on Foundational (can proceed after or parallel to US1 if staffed; shares controller file carefully)
 - **Phase 5 US3 (P2)**: Depends on Foundational; docs/smoke after endpoints exist (prefer after US1 or US2)
 - **Phase 6 US4 (P3)**: Depends on US1+US2 prompts/services existing
@@ -149,14 +149,14 @@ description: "Task list for City–Item File Search API implementation"
 ### User Story Dependencies
 
 - **US1**: After Foundational only (fail-fast already active)
-- **US2**: After Foundational; shares `SearchController.java` / `LlmSearchGateway.java` with US1 — coordinate sequential edits on those files
+- **US2**: After Foundational; shares `SearchController.java` / `LlmSearchGateway.java` with US1 â€” coordinate sequential edits on those files
 - **US3**: After Foundational; README + operator smoke validation
 - **US4**: After US1+US2 prompt/service paths exist
 
 ### Parallel Opportunities
 
-- T003–T005 (setup files) in parallel after T001–T002
-- T008–T011, T013 in parallel within Foundational where noted
+- T003â€“T005 (setup files) in parallel after T001â€“T002
+- T008â€“T011, T013 in parallel within Foundational where noted
 - T021 can start in parallel with T018 only if different owners avoid conflicting controller edits; otherwise sequence US1 then US2
 - T027 parallelizable across two prompt files
 - T030, T031, T033 polish tasks parallelizable
@@ -195,11 +195,11 @@ Task: "Implement POST /api/city in SearchController.java"
 
 ### Incremental Delivery
 
-1. Setup + Foundational (fail-fast included) → foundation ready
-2. US1 `/api/city` → validate → MVP
-3. US2 `/api/items` → validate
-4. US3 operator docs/smoke → validate
-5. US4 out-of-scope hardening → validate
+1. Setup + Foundational (fail-fast included) â†’ foundation ready
+2. US1 `/api/city` â†’ validate â†’ MVP
+3. US2 `/api/items` â†’ validate
+4. US3 operator docs/smoke â†’ validate
+5. US4 out-of-scope hardening â†’ validate
 6. Polish + quickstart.md
 
 ### Suggested MVP Scope

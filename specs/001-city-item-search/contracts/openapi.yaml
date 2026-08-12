@@ -22,7 +22,9 @@ paths:
             schema:
               $ref: "#/components/schemas/SearchRequest"
             example:
-              params: Find cities that have both item A and item B
+              params:
+                items:
+                  - Turbina wiatrowa mająca 48V i moc 400W
       responses:
         "200":
           description: Search finished; output is comma-separated city names or a descriptive error
@@ -41,7 +43,7 @@ paths:
                   value:
                     output: "Command out of scope for /api/items"
         "400":
-          description: Missing or blank params before LLM invocation
+          description: Missing, null, or empty params object before LLM invocation
           content:
             application/json:
               schema:
@@ -65,7 +67,8 @@ paths:
             schema:
               $ref: "#/components/schemas/SearchRequest"
             example:
-              params: List all items in Warszawa
+              params:
+                city: Warszawa
       responses:
         "200":
           description: Search finished; output is comma-separated item names or a descriptive error
@@ -84,7 +87,7 @@ paths:
                   value:
                     output: "Provide exactly one city name"
         "400":
-          description: Missing or blank params before LLM invocation
+          description: Missing, null, or empty params object before LLM invocation
           content:
             application/json:
               schema:
@@ -105,9 +108,12 @@ components:
       additionalProperties: false
       properties:
         params:
-          type: string
-          minLength: 1
-          description: Natural-language command for this endpoint
+          type: object
+          minProperties: 1
+          additionalProperties: true
+          description: >
+            Structured JSON object forwarded as-is (serialized) to the LLM as the user message.
+            Shape is endpoint-specific (e.g. items array for /api/items, city for /api/city).
     SearchResponse:
       type: object
       required: [output]
